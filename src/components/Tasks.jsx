@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const Tasks = () => {
   const [taskName, setTaskName] = useState("");
@@ -112,7 +113,14 @@ const Tasks = () => {
               filteredTasks.map((task, index) => (
                 <tr key={task.id} className={task.status === "Completed" ? "bg-green-50" : ""}>
                   <td className="border-b border-blue-100 px-4 py-2 text-left">{index + 1}</td>
-                  <td className="border-b border-blue-100 px-4 py-2 text-left">{task.name}</td>
+                  <td className="border-b border-blue-100 px-4 py-2 text-left">
+                    <Link
+                      to={`/tasks/${task.id}`}
+                      className="text-blue-600 hover:text-blue-800 font-medium hover:underline"
+                    >
+                      {task.name}
+                    </Link>
+                  </td>
                   <td className="border-b border-blue-100 px-4 py-2 text-left">
                     <button
                       onClick={() => handleToggleStatus(task.id)}
