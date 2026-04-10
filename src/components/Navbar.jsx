@@ -1,19 +1,20 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+
   return (
-    <nav className="bg-blue-600 text-white shadow-lg">
-      <div className="max-w-6xl mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Task Manager</h1>
-          <div className="flex gap-6">
+    <nav className="top-nav">
+      <div className="top-nav-inner">
+        <h1 className="top-nav-title">Task Manager</h1>
+        <div className="top-nav-links">
             <NavLink
-              to="/"
+              to="/home"
               className={({ isActive }) =>
-                `px-4 py-2 rounded font-medium transition ${
+                `top-nav-link ${
                   isActive
-                    ? "bg-white text-blue-600"
-                    : "hover:bg-blue-700"
+                    ? "top-nav-link-active"
+                    : ""
                 }`
               }
             >
@@ -22,10 +23,10 @@ const Navbar = () => {
             <NavLink
               to="/tasks"
               className={({ isActive }) =>
-                `px-4 py-2 rounded font-medium transition ${
+                `top-nav-link ${
                   isActive
-                    ? "bg-white text-blue-600"
-                    : "hover:bg-blue-700"
+                    ? "top-nav-link-active"
+                    : ""
                 }`
               }
             >
@@ -34,18 +35,27 @@ const Navbar = () => {
             <NavLink
               to="/profile"
               className={({ isActive }) =>
-                `px-4 py-2 rounded font-medium transition ${
+                `top-nav-link ${
                   isActive
-                    ? "bg-white text-blue-600"
-                    : "hover:bg-blue-700"
+                    ? "top-nav-link-active"
+                    : ""
                 }`
               }
             >
               Profile
             </NavLink>
+            <button
+              type="button"
+              className="top-nav-logout"
+              onClick={() => {
+                localStorage.removeItem("authUser");
+                navigate("/login", { replace: true });
+              }}
+            >
+              Logout
+            </button>
           </div>
         </div>
-      </div>
     </nav>
   );
 };

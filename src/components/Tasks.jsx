@@ -1,15 +1,26 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+const fallbackTasks = [
+  { id: 1, name: "Task 1", status: "In Progress" },
+  { id: 2, name: "Task 2", status: "Completed" },
+];
+
 const Tasks = () => {
   const [taskName, setTaskName] = useState("");
   const [filter, setFilter] = useState("all");
   const [tasks, setTasks] = useState(() => {
-    const savedTasks = localStorage.getItem("tasks");
-    return savedTasks ? JSON.parse(savedTasks) : [
-      { id: 1, name: "Task 1", status: "In Progress" },
-      { id: 2, name: "Task 2", status: "Completed" },
-    ];
+    try {
+      const savedTasks = localStorage.getItem("tasks");
+      if (!savedTasks) {
+        return fallbackTasks;
+      }
+
+      const parsed = JSON.parse(savedTasks);
+      return Array.isArray(parsed) ? parsed : fallbackTasks;
+    } catch {
+      return fallbackTasks;
+    }
   });
 
   // Save tasks to localStorage whenever they change
@@ -55,88 +66,86 @@ const Tasks = () => {
     : tasks;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-blue-100 to-blue-50">
-      <div className="w-full max-w-2xl bg-white border border-blue-200 rounded-xl p-6 shadow-lg">
-        <h1 className="text-2xl font-bold text-blue-900 mb-4">Task Table</h1>
+    <section className="tasks-page">
+      <div className="tasks-card">
+        <h1 className="tasks-title">Task Table</h1>
 
-        <form className="flex flex-col sm:flex-row gap-2 mb-4" onSubmit={handleAddTask}>
+        <form className="tasks-form" onSubmit={handleAddTask}>
           <input
             type="text"
             placeholder="Enter a task"
             value={taskName}
             onChange={(event) => setTaskName(event.target.value)}
-            className="flex-1 border border-blue-300 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="tasks-input"
           />
-          <button type="submit" className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg cursor-pointer hover:bg-blue-700 transition">Add Task</button>
+          <button type="submit" className="tasks-add-btn">Add Task</button>
         </form>
 
-        <div className="flex gap-2 mb-4">
+        <div className="tasks-filters">
           <button
+            type="button"
             onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded font-medium transition ${
-              filter === "all"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
+            className={filter === "all" ? "tasks-filter-btn active" : "tasks-filter-btn"}
           >
             All Tasks
           </button>
           <button
+            type="button"
             onClick={() => setFilter("completed")}
-            className={`px-4 py-2 rounded font-medium transition ${
-              filter === "completed"
-                ? "bg-green-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
+            className={
+              filter === "completed" ? "tasks-filter-btn tasks-filter-completed active" : "tasks-filter-btn"
+            }
           >
             Completed Only
           </button>
         </div>
 
-        <table className="w-full border-collapse">
+        <table className="tasks-table">
           <thead>
             <tr>
-              <th className="border-b border-blue-100 px-4 py-2 text-left text-blue-700 bg-blue-50 font-semibold">#</th>
-              <th className="border-b border-blue-100 px-4 py-2 text-left text-blue-700 bg-blue-50 font-semibold">Task</th>
-              <th className="border-b border-blue-100 px-4 py-2 text-left text-blue-700 bg-blue-50 font-semibold">Status</th>
-              <th className="border-b border-blue-100 px-4 py-2 text-left text-blue-700 bg-blue-50 font-semibold">Action</th>
+              <th>#</th>
+              <th>Task</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {filteredTasks.length === 0 ? (
               <tr>
-                <td colSpan="4" className="border-b border-blue-100 px-4 py-2 text-center text-gray-500 italic">
+                <td colSpan="4" className="tasks-empty-row">
                   No tasks yet.
                 </td>
               </tr>
             ) : (
               filteredTasks.map((task, index) => (
-                <tr key={task.id} className={task.status === "Completed" ? "bg-green-50" : ""}>
-                  <td className="border-b border-blue-100 px-4 py-2 text-left">{index + 1}</td>
-                  <td className="border-b border-blue-100 px-4 py-2 text-left">
+                <tr key={task.id} className={task.status === "Completed" ? "tasks-row-completed" : ""}>
+                  <td>{index + 1}</td>
+                  <td>
                     <Link
                       to={`/tasks/${task.id}`}
-                      className="text-blue-600 hover:text-blue-800 font-medium hover:underline"
+                      className="tasks-link"
                     >
                       {task.name}
                     </Link>
                   </td>
-                  <td className="border-b border-blue-100 px-4 py-2 text-left">
+                  <td>
                     <button
+                      type="button"
                       onClick={() => handleToggleStatus(task.id)}
-                      className={`px-3 py-1 rounded font-medium text-sm transition ${
+                      className={
                         task.status === "Completed"
-                          ? "bg-green-200 text-green-800 hover:bg-green-300"
-                          : "bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
-                      }`}
+                          ? "tasks-status-btn tasks-status-completed"
+                          : "tasks-status-btn tasks-status-progress"
+                      }
                     >
                       {task.status}
                     </button>
                   </td>
-                  <td className="border-b border-blue-100 px-4 py-2 text-left">
+                  <td>
                     <button
+                      type="button"
                       onClick={() => handleDeleteTask(task.id)}
-                      className="px-2 py-1 border border-red-500 text-red-500 rounded cursor-pointer hover:bg-red-50 transition text-sm font-medium"
+                      className="tasks-delete-btn"
                     >
                       Delete
                     </button>
@@ -147,7 +156,7 @@ const Tasks = () => {
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
   );
 };
 
