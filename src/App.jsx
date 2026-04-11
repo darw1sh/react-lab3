@@ -64,7 +64,6 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="/dashboard" element={<Navigate to="/home" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>

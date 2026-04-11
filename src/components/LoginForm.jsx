@@ -15,7 +15,7 @@ const LoginForm = () => {
   return (
     <section className="auth-card">
       <h1 className="auth-title">Login</h1>
-      <p className="auth-subtitle">Sign in to continue to your dashboard.</p>
+      <p className="auth-subtitle">Sign in to continue.</p>
 
       <Formik
         initialValues={{ email: "", password: "" }}
